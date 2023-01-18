@@ -1,33 +1,17 @@
 # -*- coding: utf-8 -*-
 """
 
-Program for Krissy 
+Program for Krissy
 
-*faculty can do 2 back to back on a day
-*they want to do soft no more than 5 and hard no more than 8 
-interviews each
+@author: Michael P Mariani PhD
 
-Sheet2: I deleted second "Monday Jan 16 column in input file" - 
-it appears to be entirely empty
-
-Sheet2: I moved 
-'If available before 8am on any days, list dates & times' 
-and
-'If available after 5pm on any days, list dates & times'
-columns to the end of the sheet
-
-chnaged names to 'before8' and 'after5' respectively
-
-
-Sheet3: "indicate" column that I rename was originally titled:
-'Please indicate below what days you are available morning and/or 
-afternoon.  Please indicate any of the time slots below where you 
-will have any availability for up to 30 minutes.'  
-
-Sheet3: rename 'num_interviews' from
-'How many interviews do you mind conducting 
-back to back in one day? (15 minutes in between) 
-Please check all that apply''
+################### COPYRIGHT ######################
+#Copyright (c) 2023, Mariani Systems LLC
+#  All rights reserved.
+#
+#This source code is licensed under the license found in the
+#LICENSE file in the root directory of this source tree. 
+####################################################
 
 """
 

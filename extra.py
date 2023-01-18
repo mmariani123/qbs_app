@@ -2,7 +2,16 @@
 """
 Created on Tue Jan 17 11:13:44 2023
 
-@author: Mike_2
+@author: Michael P Mariani PhD
+
+################### COPYRIGHT ######################
+#Copyright (c) 2023, Mariani Systems LLC
+#  All rights reserved.
+#
+#This source code is licensed under the license found in the
+#LICENSE file in the root directory of this source tree. 
+####################################################
+
 """
 
 #Extra stuff for the QBS APP
