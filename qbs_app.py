@@ -1,3 +1,5 @@
+#!/usr/bin/env Python3
+
 # -*- coding: utf-8 -*-
 """
 
@@ -39,11 +41,14 @@ def unique(list1):
     for x in unique_list:
          print(x)
          
-inputPath = 'G:/My Drive/mariani_systems_2022/qbs_app_project/input_mm.xlsx'
-os.chdir('G:/My Drive/mariani_systems_2022/qbs_app_project')
+#inputPath = 'G:/My Drive/mariani_systems_2022/qbs_app_project/input_mm.xlsx'
+inputPath='input_mm.xlsx'
+
+#os.chdir('G:/My Drive/mariani_systems_2022/qbs_app_project')
 
 appsFacAlumDf = pd.read_excel(inputPath,
                            sheet_name=0)
+
 appsFacAlumDf.columns = appsFacAlumDf.columns.map(str)
 
 facDesiredCounts = appsFacAlumDf["AC"].value_counts()
