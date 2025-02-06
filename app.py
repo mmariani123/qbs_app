@@ -43,23 +43,28 @@ con = duckdb.connect(str(db_file), read_only=True)
 
 app_ui = ui.page_sidebar(
     ui.sidebar(
-        ui.input_action_button("add_query", "Add Query", class_="btn btn-primary"),
+        ui.input_action_button("add_query", "Upload schedule file", class_="btn btn-primary"),
         ui.input_action_button(
-            "show_meta", "Show Metadata", class_="btn btn-secondary"
+            "get_matches", "Get Matches!", class_="btn btn-secondary"
+        ),
+        ui.input_action_button(
+            "show_meta", "Dowload Results", class_="btn btn-secondary"
         ),
         ui.markdown(
             """
-            This app lets you explore a dataset using SQL and duckdb.
-            The data is stored in an on-disk [duckdb](https://duckdb.org/) database,
-            which leads to extremely fast queries.
+            This App is for matching QBS applicants with desired faculty and alumni
             """
+            #This app lets you explore a dataset using SQL and duckdb.
+            #The data is stored in an on-disk [duckdb](https://duckdb.org/) database,
+            #which leads to extremely fast queries.
         ),
     ),
     ui.tags.div(
         query_output_ui("initial_query", remove_id="initial_query"),
         id="module_container",
     ),
-    title="DuckDB query explorer",
+    #title="DuckDB query explorer",
+    title="QBS App for Krissy",
     class_="bslib-page-dashboard",
 )
 

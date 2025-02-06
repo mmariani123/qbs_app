@@ -3,7 +3,8 @@ from shiny import module, reactive, render, ui
 
 
 @module.ui
-def query_output_ui(remove_id, qry="SELECT * from weather LIMIT 10"):
+#def query_output_ui(remove_id, qry="SELECT * from weather LIMIT 10"):
+def query_output_ui(remove_id, qry="Results table to be output here ..."):   
     return (
         ui.card(
             {"id": remove_id},
