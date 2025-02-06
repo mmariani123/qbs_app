@@ -1,4 +1,3 @@
-faicons
+duckdb
 shiny
-seaborn
 pandas
