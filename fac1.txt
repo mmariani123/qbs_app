@@ -1,31 +1,31 @@
-Diane Gilbert-Diamond;	Friday, January 20;	2:00-2:30;	Shiqiao Zhao
-Michael Passarelli;	Monday, January 16;	2:30-3:00;	Minghui Zhang
-Jiang Gui;	Monday, January 16;	12:00-12:30;	Hongxiang Fu
-Jennifer Emond;	Monday, January 16;	10:00-10:30;	Yifan Zhao
-James O'Malley;	Tuesday, January 17;	10:00-10:30;	Yiting Wang
-Joshua Levy;	Monday, January 16;	2:30-3:00;	Savannah Gonzales
-Lucas Salas;	Monday, January 16;	11:30-12:00;	Emmanuella Ifeoma Onaku
-Siming Zhao;	Monday, January 16;	12:00-12:30;	Akhil Bandreddi
-Siming Zhao;	Monday, January 16;	10:00-10:30;	Shiqi Huang
-Alfredo Tirado-Ramos;	Monday, January 16;	12:00-12:30;	Uhurug.kamau@gmail.com
-Siming Zhao;	Monday, January 16;	2:00-2:30;	Sarah Dobbins
-Diane Gilbert-Diamond;	Friday, January 20;	12:00-12:30;	Ben Bruncati (legal Kate)
-Erika Moen;	Monday, January 16;	10:00-10:30;	Lia Rotti
-Nicholas Jacobson;	Monday, January 16;	2:00-2:30;	Sukriti Ghosh
-Siming Zhao;	Monday, January 16;	4:30-5:00;	Ruoxuan Wu
-Joshua Levy;	Monday, January 16;	9:30-10:00;	Zhaoyue Li
-Siming Zhao;	Monday, January 16;	3:30-4:00;	Mengyao Fan
-Nicholas Jacobson;	Monday, January 16;	1:00-1:30;	Zihan (Nancy) Zhang
-Nicholas Jacobson;	Monday, January 16;	12:00-12:30;	Deyi Li
-Nicholas Jacobson;	Monday, January 16;	4:30-5:00;	Ian Gingerich
+Erika Moen;	Monday, January 16;	9:00-9:30;	Lia Rotti
+Nicholas Jacobson;	Monday, January 16;	12:00-12:30;	Zhuoping Zhou
+Nicholas Jacobson;	Wednesday, January 18;	8:00-8:30;	Shae Gantt
+Jiang Gui;	Monday, January 16;	1:30-2:00;	Ruiming(Ray) Wu
+Diane Gilbert-Diamond;	Friday, January 20;	3:00-3:30;	Shiqiao Zhao
+Siming Zhao;	Monday, January 16;	11:30-12:00;	Ruoxuan Wu
+Nicholas Jacobson;	Monday, January 16;	3:00-3:30;	Sukriti Ghosh
 James O'Malley;	Wednesday, January 18;	2:30-3:00;	Chunnan Liu
-Joshua Levy;	Monday, January 16;	12:00-12:30;	Aurod Ounsinegad
-Jiang Gui;	Monday, January 16;	1:00-1:30;	Ruiming(Ray) Wu
-James O'Malley;	Wednesday, January 18;	4:30-5:00;	Qiaoxue Liu
-Nicholas Jacobson;	Wednesday, January 18;	8:30-9:00;	Shae Gantt
-Alfredo Tirado-Ramos;	Monday, January 16;	4:30-5:00;	Shaoming Xiao
-Erika Moen;	Monday, January 16;	11:30-12:00;	Xinning Shan
-Michael Whitfield;	Wednesday, January 18;	12:00-12:30;	Juan Camilo Calderón González
+Siming Zhao;	Monday, January 16;	9:00-9:30;	Sarah Dobbins
+Nicholas Jacobson;	Monday, January 16;	1:00-1:30;	Deyi Li
+Siming Zhao;	Monday, January 16;	8:00-8:30;	Akhil Bandreddi
+Joshua Levy;	Monday, January 16;	2:30-3:00;	Savannah Gonzales
+James O'Malley;	Tuesday, January 17;	10:00-10:30;	Poying Lai
+Jiang Gui;	Monday, January 16;	12:00-12:30;	Hongxiang Fu
+Joshua Levy;	Monday, January 16;	9:00-9:30;	Zhaoyue Li
+Michael Whitfield;	Monday, January 16;	9:00-9:30;	Vivek Kanpa
+Joshua Levy;	Monday, January 16;	11:30-12:00;	Aurod Ounsinegad
 Anne Hoen;	Tuesday, January 17;	12:00-12:30;	Yiyan Zhang
-James O'Malley;	Wednesday, January 18;	12:00-12:30;	Poying Lai
-Michael Whitfield;	Monday, January 16;	10:00-10:30;	Vivek Kanpa
+Michael Passarelli;	Monday, January 16;	9:00-9:30;	Minghui Zhang
+Nicholas Jacobson;	Monday, January 16;	2:00-2:30;	Johnathan Shih
+James O'Malley;	Tuesday, January 17;	9:00-9:30;	Yiting Wang
+Lucas Salas;	Monday, January 16;	11:00-11:30;	Emmanuella Ifeoma Onaku
+Siming Zhao;	Monday, January 16;	10:00-10:30;	Shiqi Huang
+Siming Zhao;	Monday, January 16;	2:30-3:00;	Mengyao Fan
+Alfredo Tirado-Ramos;	Monday, January 16;	3:30-4:00;	Shaoming Xiao
+James O'Malley;	Wednesday, January 18;	3:30-4:00;	Qiaoxue Liu
+Diane Gilbert-Diamond;	Friday, January 20;	12:00-12:30;	Ben Bruncati (legal Kate)
+Erika Moen;	Monday, January 16;	11:30-12:00;	Xinning Shan
+Jennifer Emond;	Monday, January 16;	9:00-9:30;	Yifan Zhao
+Alfredo Tirado-Ramos;	Monday, January 16;	12:00-12:30;	Uhurug.kamau@gmail.com
+Michael Whitfield;	Wednesday, January 18;	1:30-2:00;	Juan Camilo Calderón González

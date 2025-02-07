@@ -1,28 +1,28 @@
 
 ####### for running in local web browser ###############
-import nest_asyncio
-nest_asyncio.apply()
+#import nest_asyncio
+#nest_asyncio.apply()
 ########################################################
 
 ####### for functions ##################################
 import os
 import pandas as pd
 import numpy as np
-import xlsxwriter
+#import xlsxwriter
 ########################################################
 
 ################### For Shiny ##########################
 import urllib.request
 from pathlib import Path
 
-import duckdb
+#import duckdb
 from query import query_output_server, query_output_ui
+#from query import query_output_ui
 from shiny import App, reactive, ui
 #######################################################
 
 app_dir = Path(__file__).parent
 db_file = app_dir / "weather.db"
-
 
 def load_csv(con, csv_name, table_name):
     csv_url = f"https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-12-20/{csv_name}.csv"
@@ -44,9 +44,6 @@ con = duckdb.connect(str(db_file), read_only=True)
 app_ui = ui.page_sidebar(
     ui.sidebar(
         ui.input_action_button("add_query", "Upload schedule file", class_="btn btn-primary"),
-        ui.input_action_button(
-            "get_matches", "Get Matches!", class_="btn btn-secondary"
-        ),
         ui.input_action_button(
             "show_meta", "Dowload Results", class_="btn btn-secondary"
         ),
@@ -833,8 +830,8 @@ def server(input, output, session):
 
     mod_counter = reactive.value(0)
 
-    query_output_server("initial_query", con=con, remove_id="initial_query")
-
+    #query_output_server("initial_query", con=con, remove_id="initial_query")
+    
     @reactive.effect
     @reactive.event(input.add_query)
     def _():
@@ -847,7 +844,7 @@ def server(input, output, session):
             ui=query_output_ui(id, remove_id=id),
         )
         query_output_server(id, con=con, remove_id=id)
-
+    
     @reactive.effect
     @reactive.event(input.show_meta)
     def _():
@@ -867,5 +864,5 @@ def server(input, output, session):
 app = App(app_ui, server)
 
 ######### For running the App in local browser ###########################
-app.run()
+#app.run()
 ##########################################################################

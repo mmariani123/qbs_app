@@ -1,9 +1,9 @@
 import duckdb
 from shiny import module, reactive, render, ui
 
-
 @module.ui
-def query_output_ui(remove_id, qry="SELECT * from weather LIMIT 10"):  
+def query_output_ui(remove_id, qry="SELECT * from weather LIMIT 10"): 
+#def query_output_ui(remove_id, qry=""):  
     return (
         ui.card(
             {"id": remove_id},
@@ -13,15 +13,16 @@ def query_output_ui(remove_id, qry="SELECT * from weather LIMIT 10"):
                     ui.input_text_area(
                         "sql_query",
                         "Results table to be output here ...",
+                        #value="Results table to be output here ...",
                         value=qry,
+                        #value="",
+                        #width="100%",
                         width="100%",
                         height="200px",
                     ),
                     ui.layout_columns(
                         ui.input_action_button("run", "Run", class_="btn btn-primary"),
-                        ui.input_action_button(
-                            "rmv", "Remove", class_="btn btn-warning"
-                        ),
+                        ui.input_action_button("rmv", "Remove", class_="btn btn-warning"),
                     ),
                 ],
                 ui.output_data_frame("results"),
@@ -29,7 +30,6 @@ def query_output_ui(remove_id, qry="SELECT * from weather LIMIT 10"):
             ),
         ),
     )
-
 
 @module.server
 def query_output_server(
