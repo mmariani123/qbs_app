@@ -1,3 +1,8 @@
-## Database explorer app
+## QBS App for Krissy
 
-<a href='https://connect.posit.cloud/publish?framework=shiny&sourceRepositoryURL=https%3A%2F%2Fgithub.com%2Fposit-dev%2Fpy-shiny-templates&sourceRef=main&sourceRefType=branch&primaryFile=database-explorer%2Fapp-core.py&pythonVersion=3.11'><img src='https://cdn.connect.posit.cloud/assets/deploy-to-connect-blue.svg' align="right" /></a>
+App to join prospective QBS candidates with faculty and/or alumni for interviews.
+
+Shiny App interface under construction at https://michael-p-mariani.shinyapps.io/qbs_app/
+
+![image](https://github.com/user-attachments/assets/d29089b3-3f53-40fc-802a-d13038f01ff9)
+
