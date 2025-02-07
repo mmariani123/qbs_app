@@ -2,7 +2,7 @@
 
 App to join prospective QBS candidates with faculty and/or alumni for interviews.
 
-facuulty and aluni are only available for certain hours on certain days and ideally
+faculty and aluni are only available for certain hours on certain days and ideally
 each candidate will be matched with with both of their desired faculty alumni.
 
 First, we assure that the candidates number one choice is met, then second choice takes precadance,
