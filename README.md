@@ -11,6 +11,8 @@ if matched can't be made based on availability, then random assignments are made
 Current input is input_mm.xlsx - final input formatting needs to be decided by Krissy at her convenience, 
 as well as the format of the final output file: final_output.xlsx and desired alterations to the shiny interface. 
 
+See "Issues" section for current issues or bugs that need to be addressed. 
+
 Shiny App interface under construction at https://michael-p-mariani.shinyapps.io/qbs_app/
 
 ![image](https://github.com/user-attachments/assets/d29089b3-3f53-40fc-802a-d13038f01ff9)
