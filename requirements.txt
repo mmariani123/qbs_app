@@ -4,3 +4,4 @@ pandas
 numpy
 nest_asyncio
 openpyxl
+xlsxwriter

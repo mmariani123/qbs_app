@@ -8,14 +8,14 @@
 import os
 import pandas as pd
 import numpy as np
-#import xlsxwriter
+import xlsxwriter
 ########################################################
 
 ################### For Shiny ##########################
 import urllib.request
 from pathlib import Path
 
-#import duckdb
+import duckdb
 from query import query_output_server, query_output_ui
 #from query import query_output_ui
 from shiny import App, reactive, ui
@@ -31,7 +31,6 @@ def load_csv(con, csv_name, table_name):
     con.sql(
         f"CREATE TABLE {table_name} AS SELECT * FROM read_csv_auto('{local_file_path}')"
     )
-
 
 if not Path.exists(db_file):
     con = duckdb.connect(str(db_file), read_only=False)
@@ -830,7 +829,7 @@ def server(input, output, session):
 
     mod_counter = reactive.value(0)
 
-    #query_output_server("initial_query", con=con, remove_id="initial_query")
+    query_output_server("initial_query", con=con, remove_id="initial_query")
     
     @reactive.effect
     @reactive.event(input.add_query)
