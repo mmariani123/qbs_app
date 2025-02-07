@@ -2,7 +2,8 @@
 
 App to join prospective QBS candidates with faculty and/or alumni for interviews.
 
-Current input is input_mm.xlsx - final input formatting needs to be decided by Krissy at her convenience. 
+Current input is input_mm.xlsx - final input formatting needs to be decided by Krissy at her convenience, 
+as well as the format of the final output file: final_output.xlsx and desired alterations to the shiny interface. 
 
 Shiny App interface under construction at https://michael-p-mariani.shinyapps.io/qbs_app/
 
