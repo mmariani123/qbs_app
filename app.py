@@ -1000,5 +1000,5 @@ def server(input, output, session):
 app = App(app_ui, server)
 
 ######### For running the App in local browser ###########################
-app.run()
+#app.run()
 ##########################################################################
