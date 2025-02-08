@@ -5,9 +5,11 @@ nest_asyncio.apply()
 ########################################################
 
 ####### for functions ##################################
+import asyncio
 import os
 import pandas as pd
 import numpy as np
+#import datatable as dt
 #import xlsxwriter
 ########################################################
 
@@ -43,29 +45,34 @@ con = duckdb.connect(str(db_file), read_only=True)
 app_ui = ui.page_sidebar(
     ui.sidebar(
         ui.input_action_button("add_query", "Upload schedule file", class_="btn btn-primary"),
-        ui.input_action_button(
-            "show_meta", "Dowload Results", class_="btn btn-secondary"
-        ),
-        ui.markdown(
-            """
-            This App is for matching QBS applicants with desired faculty and alumni
-            """
-            #This app lets you explore a dataset using SQL and duckdb.
-            #The data is stored in an on-disk [duckdb](https://duckdb.org/) database,
-            #which leads to extremely fast queries.
-        ),
+        ui.div("(working on final schedule file format ...)"),
+        ui.input_action_button("run_matches", "Run Matching Routine"),
+        ui.download_button("downloadData", "Download Matches", class_="btn btn-secondary"),
+        #ui.input_action_button(
+        #    "show_meta", "Dowload Results", 
+        #),
+        #ui.markdown(
+        #    """
+        #    This App is for matching QBS applicants with desired faculty and alumni
+        #    """
+        #    #This app lets you explore a dataset using SQL and duckdb.
+        #    #The data is stored in an on-disk [duckdb](https://duckdb.org/) database,
+        #    #which leads to extremely fast queries.
+        #),
         ui.input_radio_buttons(
             "radio_group",  # Input ID
-            "Select an option:",  # Label for the radio button group
+            #"Select an option:",  # Label for the radio button group
+            "Show current data:",
             ["Show applicants", 
              "Show faculty", 
              "Show alumni",
              "Show times",
-             "Show time segments",
+             "Show faculty times",
              "Show days"],  # List of choices
             ),
     ),
     ui.tags.div(
+        ui.layout_column_wrap(
         #ui.layout_columns(
             #ui.tags.style(
             #    ".output_text { border: 1px solid #ccc; padding: 5px; border-radius: 4px; background-color: #f8f8f8; font-family: monospace; white-space: pre-wrap;}"
@@ -75,17 +82,26 @@ app_ui = ui.page_sidebar(
                 ui.card_header("Output selected file contents here"),
                 #ui.p("This is the body."),
                 ui.output_text("radio_value"),
+                ui.output_text_verbatim("radio_frame"),
                 #ui.p("This is still the body."),
-                ui.card_footer("This is the footer"),
+                #ui.card_footer("This is the footer"),
                 full_screen=True,
-),
+            ),
+            ui.card(
+                #ui.card_header("Data Frame as ", ui.tags.code("render.DataTable")),
+                ui.card_header("Output final matches here"),
+                ui.output_data_frame("table"),
+            ),
+            width=1 / 2,
+            max_height="500px",
          #   query_output_ui("initial_query", remove_id="initial_query"),
           #  id="module_container",
             #col_widths = {"lg": [4, 8]},
         #),
+        ),
     ),
     #title="DuckDB query explorer",
-    title="QBS App for Krissy",
+    title="QBS App for Krissy - this App is for matching QBS applicants with desired faculty and alumni",
     class_="bslib-page-dashboard",
 )
 
@@ -98,7 +114,8 @@ def server(input, output, session):
     #os.chdir("C:\\Users\\mmari\\OneDrive\\Documents\\GitHub\\qbs_app")
     
     #inputPath = "C:\\Users\\mmari\\OneDrive\\Documents\\GitHub\\qbs_app\\input_mm.xlsx"
-    inputPath='input_mm.xlsx'
+    inputPath='input_file.xlsx'
+    
     appsFacAlumDf = pd.read_excel(inputPath,
                                sheet_name=0)
     appsFacAlumDf.columns = appsFacAlumDf.columns.map(str)
@@ -119,19 +136,25 @@ def server(input, output, session):
     ####################### MAIN ALGORITHM ##########################
     
     #Applicant times:
-    #appTimesAll = pd.read_table('all_applicants.txt', sep="", header=None)
-    appTimesAll = pd.read_table('all_times.txt', sep='\t', lineterminator='\n',header=None).replace({'\\r':''}, regex=True)[0].tolist()
-    
-    #appTimesAll = ['Before8',
-    #'9-10am',
-    #'10-11am',
-    #'11-12pm',
-    #'12-1pm',
-    #'1-2pm',
-    #'2-3pm',
-    #'3-4pm',
-    #'4-5pm',
-    #'After5']
+    allTimes = pd.read_table('all_times.txt', sep='\t', lineterminator='\n',header=None).replace({'\\r':''}, regex=True)[0].tolist()
+    #allTimes = ['8:00-8:30',
+    #'8:30-9:00',
+    #'9:00-9:30',
+    #'9:30-10:00',
+    #'10:00-10:30',
+    #'10:30-11:00',
+    #'11:00-11:30',
+    #'11:30-12:00',
+    #'12:00-12:30',
+    #'12:30-1:00',
+    #'1:00-1:30',
+    #'1:30-2:00',
+    #'2:00-2:30',
+    #'2:30-3:00',
+    #'3:00-3:30',
+    #'3:30-4:00',
+    #'4:00-4:30',
+    #'4:30-5:00']
 
     #Faculty times
     facTimesAll = pd.read_table('all_faculty_time_segments.txt', sep='\t', lineterminator='\n',header=None).replace({'\\r':''}, regex=True)[0].tolist()
@@ -140,6 +163,14 @@ def server(input, output, session):
     #            'Morning',
     #            'Afternoon',
     #            'After8']
+    
+    allDays = pd.read_table('all_days.txt', sep='\t', lineterminator='\n',header=None).replace({'\\r':''}, regex=True)[0].tolist()
+    #allDays = [
+    #    'Monday, January 16',
+    #    'Tuesday, January 17',
+    #    'Wednesday, January 18',
+    #    'Thursday, January 19',
+    #	'Friday, January 20']
     
     ################### Go through appplicants
     #print(len(appsFacAlumDf["Student"]))
@@ -233,34 +264,6 @@ def server(input, output, session):
     #'Catherine Pollack']
 
     allFacAlum = allFaculty + allAlum
-
-    allTimes = pd.read_table('all_times.txt', sep='\t', lineterminator='\n',header=None).replace({'\\r':''}, regex=True)[0].tolist()
-    #allTimes = ['8:00-8:30',
-    #'8:30-9:00',
-    #'9:00-9:30',
-    #'9:30-10:00',
-    #'10:00-10:30',
-    #'10:30-11:00',
-    #'11:00-11:30',
-    #'11:30-12:00',
-    #'12:00-12:30',
-    #'12:30-1:00',
-    #'1:00-1:30',
-    #'1:30-2:00',
-    #'2:00-2:30',
-    #'2:30-3:00',
-    #'3:00-3:30',
-    #'3:30-4:00',
-    #'4:00-4:30',
-    #'4:30-5:00']
-
-    allDays = pd.read_table('all_days.txt', sep='\t', lineterminator='\n',header=None).replace({'\\r':''}, regex=True)[0].tolist()
-    #allDays = [
-    #    'Monday, January 16',
-    #    'Tuesday, January 17',
-    #    'Wednesday, January 18',
-    #    'Thursday, January 19',
-    #	'Friday, January 20']
 
     len(allFacAlum) #41
     len(allTimes) #18
@@ -751,6 +754,12 @@ def server(input, output, session):
     finalDfF  = finalDf.loc[finalDf["day"]==allDays[4]] 
     finalDfF = finalDfF.drop_duplicates(finalDfF.columns).reset_index(drop=True)
 
+    len(finalDfM["faculty"].unique()) #27
+    len(finalDfT["faculty"].unique()) #23
+    len(finalDfW["faculty"].unique()) #24
+    len(finalDfTh["faculty"].unique()) #20
+    len(finalDfF["faculty"].unique()) #24
+    
     #Need to remove blank time spot for a couple places:
     finalDfW.drop([4], axis=0, inplace=True)
     finalDfF.drop([6], axis=0, inplace=True)
@@ -781,6 +790,15 @@ def server(input, output, session):
                                          values='applicant').reset_index(drop=True))
     finalDfFCast.insert(0,'time',fTimes.unique())
 
+    len(finalDfMCast)  #18 rows
+    len(finalDfTCast)  #18 rows
+    len(finalDfWCast)  #19 rows
+    len(finalDfThCast) #18 rows
+    len(finalDfFCast)  #19 rows
+
+    #finalDfWCast= finalDfWCast.drop([18],axis=0)
+    #finalDfFCast= finalDfFCast.drop(18,axis=0)
+    
     finalDfMCast.fillna("", inplace=True)
     finalDfTCast.fillna("", inplace=True)
     finalDfWCast.fillna("", inplace=True)
@@ -832,13 +850,30 @@ def server(input, output, session):
     finalDfFCast = finalDfFCast.sort_values('otime')
     finalDfFCast.drop('otime',axis=1,inplace=True)
 
-    #Now row bind the casted table and output to file
+    #Now add the day info to the data frames as second column
+    #and row bind the casted table and output to file
+    #del finalDfMCast
+    #del finalDfTCast
+    #del finalDfWCast
+    #del finalDfThCast
+    #del finalDfFCast
+    
     dfList=[finalDfMCast,
             finalDfTCast,
             finalDfWCast,
             finalDfThCast,
             finalDfFCast]
-
+    
+    #dfList=[finalDfMCast.insert(loc=1, column="day", value = allDays[0]),
+    #        finalDfTCast.insert(loc=1, column="day", value = allDays[1]),
+    #        finalDfWCast.insert(loc=1, column="day", value = allDays[2]),
+    #        finalDfThCast.insert(loc=1, column="day", value = allDays[3]),
+    #        finalDfFCast.insert(loc=1, column="day", value = allDays[4])]
+    
+    finalOutputFrame = pd.concat(dfList, axis=0)
+    #finalOutputFrame = pd.concat(dfList, axis=1)
+    #outputDataTable = dt.Frame.from_pandas(finalOutputFrame)
+    
 ################# paste points to the applicant ##################
 ################# paste job and assign num to faculty/alum #######
 
@@ -905,6 +940,63 @@ def server(input, output, session):
     def radio_value():
         return f"You selected: {input.radio_group()}"
     
+    @render.text
+    #@reactive.event(input.radio_group)
+    def radio_frame():
+        match input.radio_group():
+            case 'Show applicants':
+                return '\n'.join(str(x) for x in apps)#.replace(r'\n', '\n')
+            case  'Show faculty':
+                return '\n'.join(str(x) for x in allFaculty)
+            case  'Show alumni':
+                return '\n'.join(str(x) for x in allAlum)
+            case  'Show times':
+                return '\n'.join(str(x) for x in allTimes)
+            case  'Show faculty times':
+                return '\n'.join(str(x) for x in facTimesAll)
+            case  'Show days':
+                return '\n'.join(str(x) for x in allDays)
+        #return f"You selected: {input.radio_group()}"
+        #appTimesAll
+        #facTimesAll
+        #apps
+        #allFaculty
+        #allAlum
+        #allTimes    
+        #allDays
+    
+    #df: reactive.value[pd.DataFrame] = reactive.value(
+    #    #sns.load_dataset("anagrams").iloc[:, 1:]
+    #    finalOutputFrame
+    #)
+    
+    #height = 350
+    #width = "fit-content"
+    @render.data_frame
+    @reactive.event(input.run_matches)
+    def table():
+        #return render.DataTable(
+        #    #df(),
+        #    finalOutputFrame,
+        #    width=width,
+        #    height=height,
+        #    filters=input.filters(),
+        #    editable=input.editable(),
+        #    selection_mode=input.selection_mode(),
+        return finalOutputFrame
+        #)  
+        
+    @render.download()
+    def downloadData():
+        """
+        This is the simplest case. The implementation simply returns the name of a file.
+        Note that the function name (`download1`) determines which download_button()
+        corresponds to this function.
+        """
+
+        path = os.path.join(os.path.dirname(__file__), "final_match_output.xlsx")
+        return path
+     
 app = App(app_ui, server)
 
 ######### For running the App in local browser ###########################
