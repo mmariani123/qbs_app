@@ -1,14 +1,14 @@
 
 ####### for running in local web browser ###############
-#import nest_asyncio
-#nest_asyncio.apply()
+import nest_asyncio
+nest_asyncio.apply()
 ########################################################
 
 ####### for functions ##################################
 import os
 import pandas as pd
 import numpy as np
-import xlsxwriter
+#import xlsxwriter
 ########################################################
 
 ################### For Shiny ##########################
@@ -54,6 +54,11 @@ app_ui = ui.page_sidebar(
             #The data is stored in an on-disk [duckdb](https://duckdb.org/) database,
             #which leads to extremely fast queries.
         ),
+        ui.input_radio_buttons(
+            "radio_group",  # Input ID
+            "Select an option:",  # Label for the radio button group
+            ["Option 1", "Option 2", "Option 3"],  # List of choices
+            ),
     ),
     ui.tags.div(
         query_output_ui("initial_query", remove_id="initial_query"),
@@ -863,5 +868,5 @@ def server(input, output, session):
 app = App(app_ui, server)
 
 ######### For running the App in local browser ###########################
-#app.run()
+app.run()
 ##########################################################################
