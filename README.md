@@ -15,5 +15,6 @@ See "Issues" section for current issues or bugs that need to be addressed.
 
 Shiny App interface under construction at https://michael-p-mariani.shinyapps.io/qbs_app/
 
-![image](https://github.com/user-attachments/assets/d29089b3-3f53-40fc-802a-d13038f01ff9)
+![image](https://github.com/user-attachments/assets/6367e151-a7fa-41c6-80b0-2ec0507c31dc)
+
 
