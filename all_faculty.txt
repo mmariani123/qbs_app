@@ -1,6 +1,6 @@
-Aaron McKenna',
-jiang gui',
-Lucas Salas',
+Aaron McKenna
+jiang gui
+Lucas Salas
 Rob Frost
 Joshua Levy
 Jennifer Emond

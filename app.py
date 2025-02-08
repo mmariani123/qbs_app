@@ -18,7 +18,7 @@ from pathlib import Path
 import duckdb
 from query import query_output_server, query_output_ui
 #from query import query_output_ui
-from shiny import App, reactive, ui
+from shiny import App, reactive, ui, render
 #######################################################
 
 app_dir = Path(__file__).parent
@@ -57,12 +57,32 @@ app_ui = ui.page_sidebar(
         ui.input_radio_buttons(
             "radio_group",  # Input ID
             "Select an option:",  # Label for the radio button group
-            ["Option 1", "Option 2", "Option 3"],  # List of choices
+            ["Show applicants", 
+             "Show faculty", 
+             "Show alumni",
+             "Show times",
+             "Show time segments",
+             "Show days"],  # List of choices
             ),
     ),
     ui.tags.div(
-        query_output_ui("initial_query", remove_id="initial_query"),
-        id="module_container",
+        #ui.layout_columns(
+            #ui.tags.style(
+            #    ".output_text { border: 1px solid #ccc; padding: 5px; border-radius: 4px; background-color: #f8f8f8; font-family: monospace; white-space: pre-wrap;}"
+            #),
+            #ui.output_text("radio_value"),
+            ui.card(
+                ui.card_header("Output selected file contents here"),
+                #ui.p("This is the body."),
+                ui.output_text("radio_value"),
+                #ui.p("This is still the body."),
+                ui.card_footer("This is the footer"),
+                full_screen=True,
+),
+         #   query_output_ui("initial_query", remove_id="initial_query"),
+          #  id="module_container",
+            #col_widths = {"lg": [4, 8]},
+        #),
     ),
     #title="DuckDB query explorer",
     title="QBS App for Krissy",
@@ -75,6 +95,9 @@ def server(input, output, session):
     
     ##################### INPUTS ###################################
     
+    #os.chdir("C:\\Users\\mmari\\OneDrive\\Documents\\GitHub\\qbs_app")
+    
+    #inputPath = "C:\\Users\\mmari\\OneDrive\\Documents\\GitHub\\qbs_app\\input_mm.xlsx"
     inputPath='input_mm.xlsx'
     appsFacAlumDf = pd.read_excel(inputPath,
                                sheet_name=0)
@@ -96,30 +119,36 @@ def server(input, output, session):
     ####################### MAIN ALGORITHM ##########################
     
     #Applicant times:
-    appTimesAll = ['Before8',
-                '9-10am',
-                '10-11am',
-                '11-12pm',
-                '12-1pm',
-                '1-2pm',
-                '2-3pm',
-                '3-4pm',
-                '4-5pm',
-                'After5']
+    #appTimesAll = pd.read_table('all_applicants.txt', sep="", header=None)
+    appTimesAll = pd.read_table('all_times.txt', sep='\t', lineterminator='\n',header=None).replace({'\\r':''}, regex=True)[0].tolist()
+    
+    #appTimesAll = ['Before8',
+    #'9-10am',
+    #'10-11am',
+    #'11-12pm',
+    #'12-1pm',
+    #'1-2pm',
+    #'2-3pm',
+    #'3-4pm',
+    #'4-5pm',
+    #'After5']
 
     #Faculty times
-    facTimesAll = ['Before8',
-                'Morning',
-                'Afternoon',
-                'After8']
+    facTimesAll = pd.read_table('all_faculty_time_segments.txt', sep='\t', lineterminator='\n',header=None).replace({'\\r':''}, regex=True)[0].tolist()
+    
+    #facTimesAll = ['Before8',
+    #            'Morning',
+    #            'Afternoon',
+    #            'After8']
     
     ################### Go through appplicants
     #print(len(appsFacAlumDf["Student"]))
     #56 applicants total
 
-    apps = appsFacAlumDf["Student"].sample(frac=1)
+    #apps = appsFacAlumDf["Student"].sample(frac=1)
     #print(apps)
-
+    apps = pd.read_table('all_applicants.txt', sep='\t', lineterminator='\n',header=None).replace({'\\r':''}, regex=True)[0].tolist()
+    
     #Let's start by creating the final
     #output matching 3d array and
     #randomly shuffling the applicant pool
@@ -153,79 +182,85 @@ def server(input, output, session):
     #'Yuka Moroishi',
     #'Catherine Pollack',
     #'Anne Hoen']
-    			
-    allFaculty = [
-    'Aaron McKenna',
-    'jiang gui',
-    'Lucas Salas',
-    'Rob Frost',
-    'Joshua Levy',
-    'Jennifer Emond',
-    'Annie Hoen',
-    'Erika',
-    'Ben Ross',
-    'Eugene Demidenko',
-    'Britt Goods',
-    'Wesley Marrero',
-    'Scott',
-    'Kenneth Hoehn',
-    'Li Song',
-    'Megan Romano',
-    'Caitlin Howe',
-    'Mike Passarelli',
-    'Alfredo',
-    'Siming Zhao',
-    'Nick Jacobson',
-    'todd mackenzie',
-    'Tor Tosteson',
-    'Daniel Schultz',
-    'Michael Whitfield',
-    'jay dunlap',
-    'Brock Christensen',
-    'Ramesh Yapalparvi',
-    "James O'Malley",
-    'Diane Gilbert-Diamond',
-    'Margie Ackerman',
-    'Jiwon Lee',
-    'Jeremiah Brown', 
-    'Carly Bobak',
-    'Ben Ross']
+    	
+    allFaculty = pd.read_table('all_faculty.txt', sep='\t', lineterminator='\n',header=None).replace({'\\r':''}, regex=True)[0].tolist()		
+    
+    #allFaculty = [
+    #'Aaron McKenna',
+    #'jiang gui',
+    #'Lucas Salas',
+    #'Rob Frost',
+    #'Joshua Levy',
+    #'Jennifer Emond',
+    #'Annie Hoen',
+    #'Erika',
+    #'Ben Ross',
+    #'Eugene Demidenko',
+    #'Britt Goods',
+    #'Wesley Marrero',
+    #'Scott',
+    #'Kenneth Hoehn',
+    #'Li Song',
+    #'Megan Romano',
+    #'Caitlin Howe',
+    #'Mike Passarelli',
+    #'Alfredo',
+    #'Siming Zhao',
+    #'Nick Jacobson',
+    #'todd mackenzie',
+    #'Tor Tosteson',
+    #'Daniel Schultz',
+    #'Michael Whitfield',
+    #'jay dunlap',
+    #'Brock Christensen',
+    #'Ramesh Yapalparvi',
+    #"James O'Malley",
+    #'Diane Gilbert-Diamond',
+    #'Margie Ackerman',
+    #'Jiwon Lee',
+    #'Jeremiah Brown', 
+    #'Carly Bobak',
+    #'Ben Ross']
 
-    allAlum = [
-    'Yuka Moroishi',
-    'David Qian',
-    'Iben Sullivan (Ricket)',
-    'Sara Lundgren',
-    'Christiaan Rees',
-    'Catherine Pollack']
+    allAlum = pd.read_table('all_alums.txt', sep='\t', lineterminator='\n',header=None).replace({'\\r':''}, regex=True)[0].tolist()
+    
+    #allAlum = [
+    #'Yuka Moroishi',
+    #'David Qian',
+    #'Iben Sullivan (Ricket)',
+    #'Sara Lundgren',
+    #'Christiaan Rees',
+    #'Catherine Pollack']
 
     allFacAlum = allFaculty + allAlum
 
-    allTimes = ['8:00-8:30',
-    '8:30-9:00',
-    '9:00-9:30',
-    '9:30-10:00',
-    '10:00-10:30',
-    '10:30-11:00',
-    '11:00-11:30',
-    '11:30-12:00',
-    '12:00-12:30',
-    '12:30-1:00',
-    '1:00-1:30',
-    '1:30-2:00',
-    '2:00-2:30',
-    '2:30-3:00',
-    '3:00-3:30',
-    '3:30-4:00',
-    '4:00-4:30',
-    '4:30-5:00']
+    allTimes = pd.read_table('all_times.txt', sep='\t', lineterminator='\n',header=None).replace({'\\r':''}, regex=True)[0].tolist()
+    #allTimes = ['8:00-8:30',
+    #'8:30-9:00',
+    #'9:00-9:30',
+    #'9:30-10:00',
+    #'10:00-10:30',
+    #'10:30-11:00',
+    #'11:00-11:30',
+    #'11:30-12:00',
+    #'12:00-12:30',
+    #'12:30-1:00',
+    #'1:00-1:30',
+    #'1:30-2:00',
+    #'2:00-2:30',
+    #'2:30-3:00',
+    #'3:00-3:30',
+    #'3:30-4:00',
+    #'4:00-4:30',
+    #'4:30-5:00']
 
-    allDays = [
-        'Monday, January 16',
-        'Tuesday, January 17',
-        'Wednesday, January 18',
-        'Thursday, January 19',
-    	'Friday, January 20']
+    allDays = pd.read_table('all_days.txt', sep='\t', lineterminator='\n',header=None).replace({'\\r':''}, regex=True)[0].tolist()
+    #allDays = [
+    #    'Monday, January 16',
+    #    'Tuesday, January 17',
+    #    'Wednesday, January 18',
+    #    'Thursday, January 19',
+    #	'Friday, January 20']
 
     len(allFacAlum) #41
     len(allTimes) #18
@@ -282,7 +317,8 @@ def server(input, output, session):
 
     finalDf.reset_index(inplace=True, drop=True)
 
-    appsPoints = dict.fromkeys(apps.array,0)
+    #appsPoints = dict.fromkeys(apps.array,0)
+    appsPoints = dict.fromkeys(np.array(apps),0)
 
     facs = allAvailFacTimes['faculty'].values
     facsAssignNums = dict.fromkeys(facs,0)
@@ -864,7 +900,11 @@ def server(input, output, session):
         )
         query_output_server(id, con=con, remove_id=id)
 
-
+    @render.text
+    #@reactive.event(input.radio_group)
+    def radio_value():
+        return f"You selected: {input.radio_group()}"
+    
 app = App(app_ui, server)
 
 ######### For running the App in local browser ###########################

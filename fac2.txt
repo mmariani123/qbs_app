@@ -1,12 +1,12 @@
-Jiang Gui;	Monday, January 16;	4:00-4:30;	Shaoming Xiao
-Erika Moen;	Thursday, January 19;	1:30-2:00;	Zihan (Nancy) Zhang
-James O'Malley;	Tuesday, January 17;	11:00-11:30;	Ruoxuan Wu
-Robert Frost;	Monday, January 16;	10:00-10:30;	Ruiming(Ray) Wu
-Diane Gilbert-Diamond;	Friday, January 20;	4:00-4:30;	Minghui Zhang
-Jiang Gui;	Monday, January 16;	2:30-3:00;	Yiting Wang
-Erika Moen;	Monday, January 16;	11:00-11:30;	Yifan Zhao
+Michael Passarelli;	Monday, January 16;	11:00-11:30;	Emmanuella Ifeoma Onaku
 Jennifer Emond;	Monday, January 16;	10:30-11:00;	Ben Bruncati (legal Kate)
+James O'Malley;	Tuesday, January 17;	11:00-11:30;	Ruoxuan Wu
+Erika Moen;	Monday, January 16;	11:00-11:30;	Yifan Zhao
+Jiang Gui;	Monday, January 16;	2:30-3:00;	Yiting Wang
+Jiang Gui;	Monday, January 16;	4:00-4:30;	Yiyan Zhang
 Joshua Levy;	Monday, January 16;	1:30-2:00;	Savannah Gonzales
 Erika Moen;	Monday, January 16;	8:00-8:30;	Akhil Bandreddi
-Michael Passarelli;	Monday, January 16;	11:00-11:30;	Emmanuella Ifeoma Onaku
 Joshua Levy;	Monday, January 16;	4:00-4:30;	Sukriti Ghosh
+Robert Frost;	Monday, January 16;	10:00-10:30;	Ruiming(Ray) Wu
+Erika Moen;	Thursday, January 19;	1:30-2:00;	Zihan (Nancy) Zhang
+Diane Gilbert-Diamond;	Friday, January 20;	1:00-1:30;	Minghui Zhang
