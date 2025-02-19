@@ -22,16 +22,22 @@ from query import query_output_server, query_output_ui
 #from query import query_output_ui
 from shiny import App, reactive, ui, render
 #######################################################
+#for local dev:
+os.chdir("C:/Users/mmari/OneDrive/Documents/GitHub/qbs_app/")
 
 app_dir = Path(__file__).parent
 db_file = app_dir / "weather.db"
 
 def load_csv(con, csv_name, table_name):
-    csv_url = f"https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-12-20/{csv_name}.csv"
+    csv_url = f"https://raw.githubusercontent.com/rfordatascience/tidytuesday/\
+        master/data/2022/2022-12-20/{csv_name}.csv"
     local_file_path = app_dir / f"{csv_name}.csv"
     urllib.request.urlretrieve(csv_url, local_file_path)
     con.sql(
-        f"CREATE TABLE {table_name} AS SELECT * FROM read_csv_auto('{local_file_path}')"
+        """
+        f"CREATE TABLE {table_name} AS SELECT * 
+        FROM read_csv_auto('{local_file_path}')"
+        """
     )
 
 if not Path.exists(db_file):
@@ -44,19 +50,25 @@ con = duckdb.connect(str(db_file), read_only=True)
 
 app_ui = ui.page_sidebar(
     ui.sidebar(
-        ui.input_action_button("add_query", "Upload schedule file", class_="btn btn-primary"),
+        ui.input_action_button("add_query", 
+                               "Upload schedule file", 
+                               class_="btn btn-primary"),
         ui.div("(working on final schedule file format ...)"),
         ui.input_action_button("run_matches", "Run Matching Routine"),
-        ui.download_button("downloadData", "Download Matches", class_="btn btn-secondary"),
+        ui.download_button("downloadData", 
+                           "Download Matches", 
+                           class_="btn btn-secondary"),
         #ui.input_action_button(
         #    "show_meta", "Dowload Results", 
         #),
         #ui.markdown(
         #    """
-        #    This App is for matching QBS applicants with desired faculty and alumni
+        #    This App is for matching QBS applicants with desired faculty 
+        #    and alumni
         #    """
         #    #This app lets you explore a dataset using SQL and duckdb.
-        #    #The data is stored in an on-disk [duckdb](https://duckdb.org/) database,
+        #    #The data is stored in an on-disk [duckdb](https://duckdb.org/) 
+        #    database,
         #    #which leads to extremely fast queries.
         #),
         ui.input_radio_buttons(
@@ -75,7 +87,9 @@ app_ui = ui.page_sidebar(
         ui.layout_column_wrap(
         #ui.layout_columns(
             #ui.tags.style(
-            #    ".output_text { border: 1px solid #ccc; padding: 5px; border-radius: 4px; background-color: #f8f8f8; font-family: monospace; white-space: pre-wrap;}"
+            #    ".output_text { border: 1px solid #ccc; padding: 5px; 
+            #    border-radius: 4px; background-color: #f8f8f8; 
+            #    font-family: monospace; white-space: pre-wrap;}"
             #),
             #ui.output_text("radio_value"),
             ui.card(
@@ -88,7 +102,8 @@ app_ui = ui.page_sidebar(
                 full_screen=True,
             ),
             ui.card(
-                #ui.card_header("Data Frame as ", ui.tags.code("render.DataTable")),
+                #ui.card_header("Data Frame as ", 
+                #ui.tags.code("render.DataTable")),
                 ui.card_header("Output final matches here"),
                 ui.output_data_frame("table"),
             ),
@@ -101,7 +116,10 @@ app_ui = ui.page_sidebar(
         ),
     ),
     #title="DuckDB query explorer",
-    title="QBS App for Krissy - this App is for matching QBS applicants with desired faculty and alumni",
+    title='''
+        "QBS App - this App is for matching QBS applicants 
+        with desired faculty and alumni"
+        ''',
     class_="bslib-page-dashboard",
 )
 
@@ -109,180 +127,146 @@ app_ui = ui.page_sidebar(
 def server(input, output, session):
     
     
-    ##################### INPUTS ###################################
+    ##################### Main inut data (.xlsx) #############################
+    ##########################################################################
+    ##########################################################################
     
-    #os.chdir("C:\\Users\\mmari\\OneDrive\\Documents\\GitHub\\qbs_app")
-    
-    #inputPath = "C:\\Users\\mmari\\OneDrive\\Documents\\GitHub\\qbs_app\\input_mm.xlsx"
     inputPath='input_file.xlsx'
+    def get_input_file(inputPath):
+        inputPath='input_file.xlsx'
     
-    appsFacAlumDf = pd.read_excel(inputPath,
-                               sheet_name=0)
-    appsFacAlumDf.columns = appsFacAlumDf.columns.map(str)
+        appsFacAlumDf = pd.read_excel(inputPath, sheet_name=0)
+        appsFacAlumDf.columns = appsFacAlumDf.columns.map(str)
 
-    facDesiredCounts = appsFacAlumDf["AC"].value_counts()
-    Num1DesiredCounts = appsFacAlumDf["1"].value_counts()
-    Num2DesiredCounts = appsFacAlumDf["2"].value_counts()
-
-    appsAvailDf = pd.read_excel(inputPath,
-                          sheet_name=1)
+        appsAvailDf = pd.read_excel(inputPath, sheet_name=1)
     
-    facAlumAvailDf = pd.read_excel(inputPath,
-                              sheet_name=2)
+        facAlumAvailDf = pd.read_excel(inputPath, sheet_name=2)
     
-    summaryDf = pd.read_excel(inputPath,
-                              sheet_name=3)
+        summaryDf = pd.read_excel(inputPath, sheet_name=3)
     
-    ####################### MAIN ALGORITHM ##########################
+        return appsFacAlumDf, appsAvailDf, facAlumAvailDf, summaryDf
+        
+    appsFacAlumDf,appsAvailDf,facAlumAvailDf,summaryDf = \
+        get_input_file(inputPath)
+    
+    #Can get the desired counts below if wish:
+    #facDesiredCounts  = appsFacAlumDf["AC"].value_counts()
+    #Num1DesiredCounts = appsFacAlumDf["1"].value_counts()
+    #Num2DesiredCounts = appsFacAlumDf["2"].value_counts()
+    
+    ################# Get auxiliary input data (.txt) ########################
+    ##########################################################################
+    ##########################################################################
     
     #Applicant times:
-    allTimes = pd.read_table('all_times.txt', sep='\t', lineterminator='\n',header=None).replace({'\\r':''}, regex=True)[0].tolist()
-    #allTimes = ['8:00-8:30',
-    #'8:30-9:00',
-    #'9:00-9:30',
-    #'9:30-10:00',
-    #'10:00-10:30',
-    #'10:30-11:00',
-    #'11:00-11:30',
-    #'11:30-12:00',
-    #'12:00-12:30',
-    #'12:30-1:00',
-    #'1:00-1:30',
-    #'1:30-2:00',
-    #'2:00-2:30',
-    #'2:30-3:00',
-    #'3:00-3:30',
-    #'3:30-4:00',
-    #'4:00-4:30',
-    #'4:30-5:00']
+    allTimes = pd.read_table('all_times.txt', 
+                             sep='\t', 
+                             lineterminator='\n',
+                             header=None).replace({'\\r':''}, 
+                             regex=True)[0].tolist()
 
     #Faculty times
-    facTimesAll = pd.read_table('all_faculty_time_segments.txt', sep='\t', lineterminator='\n',header=None).replace({'\\r':''}, regex=True)[0].tolist()
+    facTimesAll = pd.read_table('all_faculty_time_segments.txt', 
+                                sep='\t', 
+                                lineterminator='\n',
+                                header=None).replace({'\\r':''}, 
+                                regex=True)[0].tolist()
     
-    #facTimesAll = ['Before8',
-    #            'Morning',
-    #            'Afternoon',
-    #            'After8']
+    #All days available
+    allDays = pd.read_table('all_days.txt', 
+                            sep='\t', 
+                            lineterminator='\n',
+                            header=None).replace({'\\r':''}, 
+                            regex=True)[0].tolist()
+                      
+    #All applicants that are available
+    apps = pd.read_table('all_applicants.txt', 
+                         sep='\t', 
+                         lineterminator='\n',
+                         header=None).replace({'\\r':''}, 
+                         regex=True)[0].tolist()
     
-    allDays = pd.read_table('all_days.txt', sep='\t', lineterminator='\n',header=None).replace({'\\r':''}, regex=True)[0].tolist()
-    #allDays = [
-    #    'Monday, January 16',
-    #    'Tuesday, January 17',
-    #    'Wednesday, January 18',
-    #    'Thursday, January 19',
-    #	'Friday, January 20']
+    #Names of all the faculty that are available
+    allFaculty = pd.read_table('all_faculty.txt', 
+                               sep='\t', 
+                               lineterminator='\n',
+                               header=None).replace({'\\r':''}, 
+                               regex=True)[0].tolist()		
     
-    ################### Go through appplicants
-    #print(len(appsFacAlumDf["Student"]))
-    #56 applicants total
+    #Names of all alumni that are available
+    allAlum = pd.read_table('all_alums.txt', 
+                            sep='\t', 
+                            lineterminator='\n',
+                            header=None).replace({'\\r':''}, 
+                            regex=True)[0].tolist()
 
-    #apps = appsFacAlumDf["Student"].sample(frac=1)
-    #print(apps)
-    apps = pd.read_table('all_applicants.txt', sep='\t', lineterminator='\n',header=None).replace({'\\r':''}, regex=True)[0].tolist()
-    
-    #Let's start by creating the final
-    #output matching 3d array and
-    #randomly shuffling the applicant pool
+    #Can combine allFaculty and allAlum DFs if desired:
+    #allFacAlum = allFaculty + allAlum
 
-    #allFacultyQuestion = [
-    #'Christian Darab',
-    #'Josh Levy',
-    #'Rob Frost',
-    #'Student Gr #1',
-    #'David Chen',
-    #'Brock Christianson',
-    #'Meghan Muse	',
-    #'Ronnie Zipkin',
-    #'Diane Gilbert-Diamond',
-    #'Jiang Gui',
-    #'Carly Bobak',
-    #'Possible Student group',
-    #'Diane Gilbert-Diamond',
-    #'Alfredo',
-    #'Tor Tosteson',
-    #'Jeremiah Brown',
-    #'Student Gr. #2',
-    #'Elle Palmer',
-    #'George Price',
-    #'David Qian',
-    #'Soroush Vosoughi',
-    #'Britt Goods	',
-    #'Aaron McKenna',
-    #'Student Gr. #3',
-    #'Jennifer Franks',
-    #'Yuka Moroishi',
-    #'Catherine Pollack',
-    #'Anne Hoen']
-    	
-    allFaculty = pd.read_table('all_faculty.txt', sep='\t', lineterminator='\n',header=None).replace({'\\r':''}, regex=True)[0].tolist()		
-    
-    #allFaculty = [
-    #'Aaron McKenna',
-    #'jiang gui',
-    #'Lucas Salas',
-    #'Rob Frost',
-    #'Joshua Levy',
-    #'Jennifer Emond',
-    #'Annie Hoen',
-    #'Erika',
-    #'Ben Ross',
-    #'Eugene Demidenko',
-    #'Britt Goods',
-    #'Wesley Marrero',
-    #'Scott',
-    #'Kenneth Hoehn',
-    #'Li Song',
-    #'Megan Romano',
-    #'Caitlin Howe',
-    #'Mike Passarelli',
-    #'Alfredo',
-    #'Siming Zhao',
-    #'Nick Jacobson',
-    #'todd mackenzie',
-    #'Tor Tosteson',
-    #'Daniel Schultz',
-    #'Michael Whitfield',
-    #'jay dunlap',
-    #'Brock Christensen',
-    #'Ramesh Yapalparvi',
-    #"James O'Malley",
-    #'Diane Gilbert-Diamond',
-    #'Margie Ackerman',
-    #'Jiwon Lee',
-    #'Jeremiah Brown', 
-    #'Carly Bobak',
-    #'Ben Ross']
-
-    allAlum = pd.read_table('all_alums.txt', sep='\t', lineterminator='\n',header=None).replace({'\\r':''}, regex=True)[0].tolist()
-    
-    #allAlum = [
-    #'Yuka Moroishi',
-    #'David Qian',
-    #'Iben Sullivan (Ricket)',
-    #'Sara Lundgren',
-    #'Christiaan Rees',
-    #'Catherine Pollack']
-
-    allFacAlum = allFaculty + allAlum
-
-    len(allFacAlum) #41
-    len(allTimes) #18
-    len(allDays) #5
+    #Can check num rows if desired:
+    #len(allFacAlum) #41
+    #len(allTimes) #18
+    #len(allDays) #5
     #18*5=90
-    
+
     ###########################################################################
 
-    #Ben Ross was included twice in input sheet
-
-    allAvailFacTimes = facAlumAvailDf.drop(facAlumAvailDf.columns[[1,2,3,4,10,11,12,13,14,15]],axis=1)
+    #Need to ensure that the input sheet is properly formatted
+    #See readme. 
+    #For example, we want to be careful about duplicates etc. 
+    
+    #We can drop unecessary columns or discuss initial input 
+    #formatting revisions
+    #Below drops everything but names and days
+    allAvailFacTimes = facAlumAvailDf.drop(
+        facAlumAvailDf.columns[[1,2,3,4,10,11,12,13,14,15]],axis=1)
     allAvailFacTimes = pd.melt(allAvailFacTimes, 
                                id_vars='Your name', 
                                value_vars=allAvailFacTimes.columns[1:],
                                var_name="day",
                                value_name="time")
-    allAvailFacTimes.replace('morning', '8:00-8:30, 8:30-9:00, 9:00-9:30, 9:30-10:00, 10:00-10:30, 10:30-11:00, 11:00-11:30, 11:30-12:00', inplace=True)
-    allAvailFacTimes.replace('afternoon','12:00-12:30, 12:30-1:00, 1:00-1:30, 1:30-2:00, 2:00-2:30, 2:30-3:00, 3:00-3:30, 3:30-4:00, 4:00-4:30, 4:30-5:00', inplace=True)
-    allAvailFacTimes.replace('morning, afternoon','8:00-8:30, 8:30-9:00, 9:00-9:30, 9:30-10:00, 10:00-10:30, 10:30-11:00, 11:00-11:30, 11:30-12:00, 12:00-12:30, 12:30-1:00, 1:00-1:30, 1:30-2:00, 2:00-2:30, 2:30-3:00, 3:00-3:30, 3:30-4:00, 4:00-4:30, 4:30-5:00', inplace=True)
+    allAvailFacTimes.replace('morning', 
+                             '''8:00-8:30, 
+                             8:30-9:00, 
+                             9:00-9:30, 
+                             9:30-10:00, 
+                             10:00-10:30, 
+                             10:30-11:00, 
+                             11:00-11:30, 
+                             11:30-12:00''', 
+                             inplace=True)
+    allAvailFacTimes.replace('afternoon',
+                             '''12:00-12:30, 
+                             12:30-1:00, 
+                             1:00-1:30, 
+                             1:30-2:00, 
+                             2:00-2:30, 
+                             2:30-3:00, 
+                             3:00-3:30, 
+                             3:30-4:00, 
+                             4:00-4:30, 
+                             4:30-5:00''', 
+                             inplace=True)
+    allAvailFacTimes.replace('morning, afternoon',
+                             '''8:00-8:30, 
+                             8:30-9:00, 
+                             9:00-9:30, 
+                             9:30-10:00, 
+                             10:00-10:30, 
+                             10:30-11:00, 
+                             11:00-11:30, 
+                             11:30-12:00, 
+                             12:00-12:30, 
+                             12:30-1:00, 
+                             1:00-1:30, 
+                             1:30-2:00, 
+                             2:00-2:30, 
+                             2:30-3:00, 
+                             3:00-3:30, 
+                             3:30-4:00, 
+                             4:00-4:30, 
+                             4:30-5:00''', 
+                             inplace=True)
 
     newTimesFrame = allAvailFacTimes.time.str.split(", ", expand = True)
     allAvailFacTimes = pd.concat([allAvailFacTimes, newTimesFrame], axis=1)
@@ -297,34 +281,53 @@ def server(input, output, session):
     allAvailFacTimes.columns.values[0] = 'faculty'
     #Drop rows with NA in time:
     allAvailFacTimes.dropna(inplace=True)
-
+    #Drop rows with none in time
+    df_filtered = allAvailFacTimes[allAvailFacTimes['time'] != 'none']
     finalDf = allAvailFacTimes.copy()
-
-    finalDf['ofaculty'] = pd.Categorical(finalDf.faculty, 
-                                         ordered=True, 
-                                         categories=facAlumAvailDf['Your name'])
-
-    finalDf['oday'] = pd.Categorical(finalDf.day, 
-                                         ordered=True, 
-                                         categories=allDays)
-
-    finalDf['otime'] = pd.Categorical(finalDf.time, 
-                                         ordered=True, 
-                                         categories=allTimes)
-
-    finalDf = finalDf.sort_values(by=['ofaculty','oday'])
-
-    finalDf.drop('ofaculty', axis=1, inplace=True)
-    finalDf.drop('oday', axis=1, inplace=True)
-    finalDf.drop('otime', axis=1, inplace=True)
-
+    finalDf.sort_values(by=['faculty','day','time'],inplace=True,axis=0)
     finalDf.reset_index(inplace=True, drop=True)
 
-    #appsPoints = dict.fromkeys(apps.array,0)
-    appsPoints = dict.fromkeys(np.array(apps),0)
+    #finalDf['ofaculty'] = pd.Categorical(finalDf.faculty, 
+    #                                     ordered=True, 
+    #                                     categories=facAlumAvailDf['Your name']
+    #                                     )
 
-    facs = allAvailFacTimes['faculty'].values
-    facsAssignNums = dict.fromkeys(facs,0)
+    #finalDf['oday'] = pd.Categorical(finalDf.day, 
+    #                                     ordered=True, 
+    #                                     categories=allDays)
+
+    #finalDf['otime'] = pd.Categorical(finalDf.time, 
+    #                                     ordered=True, 
+    #                                     categories=allTimes)
+
+    #finalDf = finalDf.sort_values(by=['ofaculty','oday'])
+
+    #finalDf.drop('ofaculty', axis=1, inplace=True)
+    #finalDf.drop('oday', axis=1, inplace=True)
+    #finalDf.drop('otime', axis=1, inplace=True)
+    
+    #lets make sure there is an entry for every day and time for each faculty
+    #if they aren't available we will call it "closed"
+    
+    etData = np.repeat(allTimes, 
+                      len(finalDf['faculty'].unique())*\
+                         len(finalDf['day'].unique()))
+    nRow = etData.shape[0]
+    everyTimeDf = pd.DataFrame({'day':np.repeat(allDays,nRow/len(allDays)),\
+                                'time':etData,\
+                                'status':np.repeat(['closed'],nRow)})
+    everyTimeDf.insert(0, 
+                       'faculty', 
+                       np.repeat(finalDf['faculty'].unique(),nRow/\
+                       len(finalDf['faculty'].unique())),
+                       allow_duplicates=True)
+    
+    finalDf = pd.merge(finalDf, 
+                         everyTimeDf,
+                         on=['faculty','day','time'],
+                         how='right').fillna('closed').drop('status',axis=1)
+    finalDf.sort_values(by=['faculty','day','time'],inplace=True,axis=0)
+    finalDf.reset_index(inplace=True, drop=True)
     
     ################### Search for faculty 1 ################################
     #########################################################################
@@ -332,8 +335,12 @@ def server(input, output, session):
     #########################################################################
     #########################################################################
 
-    #print("\n\n\n\n\n fac 1 \n\n\n\n\n ")
+    #appsPoints = dict.fromkeys(apps.array,0)
+    appsPoints = dict.fromkeys(np.array(apps),0)
 
+    facs = allAvailFacTimes['faculty'].values
+    facsAssignNums = dict.fromkeys(facs,0)
+    
     facTimes1 = []
     for i in appsPoints.keys():
         #print(i)
@@ -361,6 +368,7 @@ def server(input, output, session):
         
         #Check if first faculty is even available
         if(not facTimes.empty):
+            print("faculty is available")
             #now suset days and check first available:
             #print(appTimes)
             #print(facTimes)
@@ -388,9 +396,9 @@ def server(input, output, session):
                 #print(facTimes[column])
                 #print(appTimes[column])
                 if(not facTimes[column].isnull().values.any()):
-                    print('hi')
+                    print('fac times present')
                     if(not appTimes.isnull().values.any()):
-                        print('yo')
+                        print('app times present')
                         facTimesSplit = facTimes[column].str.split(', ')
                         appTimesSplit = appTimes[column].str.split(', ')
                     
@@ -435,7 +443,7 @@ def server(input, output, session):
                         olap = list(set(facTimesSplit) & set(appTimesSplit))
                         #print(olap)
                         if(bool(olap)==True):
-                            print('sup')
+                            print('overlap between facTimes and appTimes')
                             #Check if slot is already assigned in final sheet,
                             #if not, Assign the first available overlap to the final sheet
                             for check in range(len(olap)):
@@ -1000,5 +1008,5 @@ def server(input, output, session):
 app = App(app_ui, server)
 
 ######### For running the App in local browser ###########################
-#app.run()
+app.run()
 ##########################################################################
