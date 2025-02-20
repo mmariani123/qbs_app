@@ -1,7 +1,7 @@
 
 ####### for running in local web browser ###############
 import nest_asyncio
-nest_asyncio.apply()
+#nest_asyncio.apply()
 ########################################################
 
 ####### for functions ##################################
@@ -127,7 +127,7 @@ app_ui = ui.page_sidebar(
 def server(input, output, session):
     
     
-    ##################### Main inut data (.xlsx) #############################
+    ##################### Main input data (.xlsx) #############################
     ##########################################################################
     ##########################################################################
     
@@ -282,7 +282,7 @@ def server(input, output, session):
     #Drop rows with NA in time:
     allAvailFacTimes.dropna(inplace=True)
     #Drop rows with none in time
-    df_filtered = allAvailFacTimes[allAvailFacTimes['time'] != 'none']
+    allAvailFacTimes = allAvailFacTimes[allAvailFacTimes['time'] != 'none']
     finalDf = allAvailFacTimes.copy()
     finalDf.sort_values(by=['faculty','day','time'],inplace=True,axis=0)
     finalDf.reset_index(inplace=True, drop=True)
@@ -399,6 +399,8 @@ def server(input, output, session):
                     print('fac times present')
                     if(not appTimes.isnull().values.any()):
                         print('app times present')
+                        facTimes[column] = facTimes[column].str.strip()
+                        appTimes[column] = appTimes[column].str.strip()
                         facTimesSplit = facTimes[column].str.split(', ')
                         appTimesSplit = appTimes[column].str.split(', ')
                     
@@ -448,10 +450,12 @@ def server(input, output, session):
                             #if not, Assign the first available overlap to the final sheet
                             for check in range(len(olap)):
                                 #exit()
-    ############## major if case here ###########################################                            
+                                ############## major if case here ###########################################                            
                                 #check present time slot:
                                 checkPresent = (finalDf[(finalDf['faculty']==fac1) & (finalDf['time']==olap[check]) & (finalDf['day']==column)]['applicant'].to_string(index=False) == 'open') & (appsPoints[i] < 2)
                                 #get row index of current time slot
+                                if(checkPresent==False): #If false wont be able to asign currentIndex below
+                                    continue
                                 currentIndex = finalDf.index[(finalDf['faculty']==fac1) & (finalDf['time']==olap[check]) & (finalDf['day']==column)].values[0]
                                 #check 1/2 hour after 8 and 1/2 hour before 5:
                                 checkBefore = (not ((finalDf.iloc[currentIndex]['applicant'] == '8:00-8:30') & (finalDf.iloc[currentIndex+1]['applicant'] != 'open')))
@@ -479,9 +483,9 @@ def server(input, output, session):
                                     stringOut = ';\t'.join(map(str,vals))
                                     facTimes1.append(stringOut)
                                     break
-                            else:
-                                continue
-                            break
+                            #else:
+                            #    continue
+                            #break
                              
                                 #for check in range(len(olap)):
                                 #    if(any(finalDf['faculty'].str.match(fac1)) & any((finalDf['time'].str.match(olap[check]))) & any((finalDf['day'].str.match(column))) & any((finalDf['applicant']==i))):
@@ -502,15 +506,13 @@ def server(input, output, session):
 
     with open('fac1.txt', 'w') as f1:
         f1.write('\n'.join([str(x) for x in facTimes1]))
-    f1.close()    
+        f1.close()    
     
 ########################### Search for faculty 2 ###########################
 ############################################################################
 ############################################################################
 ############################################################################
 ############################################################################
-
-#print("\n\n\n\n\n fac 2 \n\n\n\n\n ")
 
     facTimes2 = []
     for i in appsPoints.keys():
@@ -519,17 +521,14 @@ def server(input, output, session):
         #appsList.append(appsFacAlumDf.loc[(appsFacAlumDf['Student'] == i),["1","2"]])
         #Find first faculty:
         fac2 = appsFacAlumDf.loc[(appsFacAlumDf['Student'] == i),["2"]].iloc[0,0]
-    
         #If fac1 isn't listed (is na) or is not included in faculty list
         #select their fac2 as fac3 or just skip
         if((pd.isna(fac2)) | (facsAssignNums.get(fac2) is None)):
             #fac2 = appsFacAlumDf.loc[(appsFacAlumDf['Student'] == i),["3"]].iloc[0,0]
             continue
-    
         #If fac already has 5, move on
         if(facsAssignNums[fac2]>=5):
             continue
-    
         appTimes = appsAvailDf.drop(appsAvailDf.columns[[1,7,8,9,10,11,12]],axis=1).loc[(appsAvailDf['Your Name'] == i)]
         facTimes = facAlumAvailDf.drop(facAlumAvailDf.columns[[1,2,3,4,10,11,12,13,14,15]],axis=1).loc[(facAlumAvailDf['Your name'] == fac2)]
         #Check if first faculty is even available
@@ -551,10 +550,8 @@ def server(input, output, session):
                     if(not appTimes.isnull().values.any()):
                         facTimesSplit = facTimes[column].str.split(', ')
                         appTimesSplit = appTimes[column].str.split(', ')
-                
                         facTimesSplit = facTimesSplit.tolist()[0]
                         #Breakup applicant times into half hours:
-                    
                         appTimesSplit = appTimesSplit.tolist()[0]
                         appTimesSplit = [sub.replace('8-9am', '8:00-8:30, 8:30-9:00') for sub in appTimesSplit]
                         appTimesSplit = [sub.replace('9-10am', '9:00-9:30, 9:30-10:00') for sub in appTimesSplit]
@@ -565,11 +562,9 @@ def server(input, output, session):
                         appTimesSplit = [sub.replace('2-3pm', '2:00-2:30, 2:30-3:00') for sub in appTimesSplit]
                         appTimesSplit = [sub.replace('3-4pm', '3:00-3:30, 3:30-4:00') for sub in appTimesSplit]
                         appTimesSplit = [sub.replace('4-5pm', '4:00-4:30, 4:30-5:00') for sub in appTimesSplit]
-                    
                         appTimesSplit = [i.split(', ') for i in appTimesSplit] 
                         #flatten the above list:
                         appTimesSplit = [item for sublist in appTimesSplit for item in sublist]
-                
                         #look for intersection and take first instance of intersection
                         olap = list(set(facTimesSplit) & set(appTimesSplit))
                         #print(olap)
@@ -578,22 +573,17 @@ def server(input, output, session):
                             #if not, Assign the first available overlap to the final sheet
                             for check in range(len(olap)):
                                 #exit()
-############## major if case here ###########################################                            
-
+                                ############## major if case here ##########################################
                                 #check present time slot:
                                 checkPresent = (finalDf[(finalDf['faculty']==fac2) & (finalDf['time']==olap[check]) & (finalDf['day']==column)]['applicant'].to_string(index=False) == 'open') & (appsPoints[i] < 2)
+                                if(checkPresent==False): #If FALSE, wont be able to assign currentIndex below
+                                    continue
                                 #get row index of current time slot
                                 currentIndex = finalDf.index[(finalDf['faculty']==fac2) & (finalDf['time']==olap[check]) & (finalDf['day']==column)][0]
                                 #check 1/2 hour after 8 and 1/2 hour before 5:
-                                checkBefore = (not ((finalDf.iloc[currentIndex]['applicant'] == '8:00-8:30') & \
-                                    (finalDf.iloc[currentIndex+1]['applicant'] != 'open')))
-                                checkAfter = (not ((finalDf.iloc[currentIndex]['applicant'] == '4:30-5:00') & \
-                                    (finalDf.iloc[currentIndex-1]['applicant'] != 'open')))
-                                checkInBetween = ((finalDf.iloc[currentIndex]['applicant'] != '8:00-8:30') & \
-                                              (finalDf.iloc[currentIndex]['applicant'] != '4:30-5:00') & \
-                                              (finalDf.iloc[currentIndex-1]['applicant'] == 'open') & \
-                                              (finalDf.iloc[currentIndex+1]['applicant'] == 'open'))
-                                
+                                checkBefore = (not ((finalDf.iloc[currentIndex]['applicant'] == '8:00-8:30') & (finalDf.iloc[currentIndex+1]['applicant'] != 'open')))
+                                checkAfter = (not ((finalDf.iloc[currentIndex]['applicant'] == '4:30-5:00') & (finalDf.iloc[currentIndex-1]['applicant'] != 'open')))
+                                checkInBetween = ((finalDf.iloc[currentIndex]['applicant'] != '8:00-8:30') & (finalDf.iloc[currentIndex]['applicant'] != '4:30-5:00') & (finalDf.iloc[currentIndex-1]['applicant'] == 'open') & (finalDf.iloc[currentIndex+1]['applicant'] == 'open'))
                                 if((checkPresent) & (checkBefore) & (checkAfter) & (checkInBetween)):
                                     print('assigning')
                                     #exit()
@@ -615,14 +605,13 @@ def server(input, output, session):
                                     vals = selectDf.astype(str).values.flatten().tolist()
                                     stringOut = ';\t'.join(map(str,vals))
                                     facTimes2.append(stringOut)
-                                    break
-                        else:
-                            continue
-                        break
-
+                                    #break
+    #else:
+    #    continue
+    #break
     #Output fac2 matches file:
-        if os.path.exists("fac2.txt"):
-            os.remove("fac2.txt")
+    if os.path.exists("fac2.txt"):
+        os.remove("fac2.txt")
     
     with open('fac2.txt', 'w') as f2:
         f2.write('\n'.join([str(x) for x in facTimes2]))
@@ -683,28 +672,29 @@ def server(input, output, session):
                     checkInBetween = False
                     #pic random row in assignment df:
                     randomRow = finalDf.sample()
-                    #print(randomRow['faculty'])
+                    print(randomRow['faculty'])
                     #check if faculty:
-                    if(((alumFacCheck.loc[alumFacCheck['faculty']==randomRow.faculty.values[0],'job'].values[0]=='fac') &\
-                                (alumFacCheck.loc[alumFacCheck['faculty']==randomRow.faculty.values[0],'status'].values[0]==0)) |\
+                    if(((alumFacCheck.loc[alumFacCheck['faculty']==randomRow.faculty.values[0],'job'].values[0]=='fac') & \
+                                (alumFacCheck.loc[alumFacCheck['faculty']==randomRow.faculty.values[0],'status'].values[0]==0)) | \
                                ((all(alumFacCheck.loc[alumFacCheck['job']=='fac'].status==1) & \
                                  (alumFacCheck.loc[alumFacCheck['faculty']==randomRow.faculty.values[0],'job'].values[0]=='alum')))):
-                                
+                        #Check below if our random row is already occupied      
                         #check present time slot:
                         checkPresent = (randomRow['applicant'].to_string(index=False)=='open')
-                                    
+                        if(checkPresent==True):            
+                            print('random selection is open')  
                         #get row index of current time slot
                         currentIndex = randomRow.index[0]
             
-                        #check fac #s alreads assigned:
+                        #check fac #s already assigned:
                         selFac = finalDf.iloc[currentIndex]['faculty']
-                
                         #assign the faculty over alum:
                         alumFacCheck.loc[alumFacCheck['faculty']==selFac,'status'] = 1
                 
                         if(facsAssignNums[selFac]>=5):
                             continue
-            
+                        
+                        #Trying to spread out times here so faculty and students dont have back to back
                         #check if index is first or last
                         if(currentIndex==len(finalDf.index)-1):
                             checkBefore = (finalDf.iloc[currentIndex-1]['applicant'] != 'open')
@@ -719,11 +709,12 @@ def server(input, output, session):
                             checkBefore = (not ((finalDf.iloc[currentIndex]['applicant'] == '8:00-8:30') & (finalDf.iloc[currentIndex+1]['applicant'] != 'open')))
                             checkAfter = (not ((finalDf.iloc[currentIndex]['applicant'] == '4:30-5:00') & (finalDf.iloc[currentIndex-1]['applicant'] != 'open')))
                             checkInBetween = ((finalDf.iloc[currentIndex]['applicant'] != '8:00-8:30') & (finalDf.iloc[currentIndex]['applicant'] != '4:30-5:00') & (finalDf.iloc[currentIndex-1]['applicant'] == 'open') & (finalDf.iloc[currentIndex+1]['applicant'] == 'open'))
-                            #print(checkPresent + checkBefore + checkAfter + checkInBetween)
+                        print(checkPresent + checkBefore + checkAfter + checkInBetween)
                         if((checkPresent) & (checkBefore) & (checkAfter) & (checkInBetween)):
                             #print('assigning random')
-                            finalDf.iloc[currentIndex]["applicant"] = i 
+                            finalDf.iloc[currentIndex,"applicant"] = i 
                             appsPoints[i]+=1
+                            print(appsPoints[i])
                             facsAssignNums[selFac]+=1
                             alumFacCheck.loc[alumFacCheck['faculty']==selFac,'status'] = 1
                     
@@ -732,9 +723,26 @@ def server(input, output, session):
                             alumFacCheck['job']=allJobs
                             alumFacCheck['status']=np.repeat(0,alumFacCheck.shape[0])
                     
-                            #print(appsPoints[i])
-                            #print(appsPoints)
-
+                            print(appsPoints[i])
+                            print(appsPoints)
+                            #continue
+                        #else can set back to back slots 
+                        else:
+                            #print('assigning random')
+                            finalDf[currentIndex,"applicant"] = i 
+                            appsPoints[i]+=1
+                            print(appsPoints[i])
+                            facsAssignNums[selFac]+=1
+                            alumFacCheck.loc[alumFacCheck['faculty']==selFac,'status'] = 1
+                    
+                            #Reset faculty over alum priority check:
+                            alumFacCheck['faculty']=allSubs
+                            alumFacCheck['job']=allJobs
+                            alumFacCheck['status']=np.repeat(0,alumFacCheck.shape[0])
+                    
+                            print(appsPoints[i])
+                            print(appsPoints)
+                        
     print(alumFacCheck)   
     
 ################### Final formatting and output #######################
@@ -1008,5 +1016,5 @@ def server(input, output, session):
 app = App(app_ui, server)
 
 ######### For running the App in local browser ###########################
-app.run()
+#app.run()
 ##########################################################################
